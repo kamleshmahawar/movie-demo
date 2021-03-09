@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>This is my page</h1>
+    <hr>
+   <button id="loadData">load</button>
+     <div id="json">
+
+     </div>
+
+     <form>
+         new movie: <input type="text" id="movieName">
+         <button type="submit" id="submit">Add</button>
+     </form>
+<script>
+    window.onload = init;
+    function init() {
+        var loadData = document.getElementById("loadData");
+        loadData.onclick = fetchData;
+        var submit = document.getElementById("submit");
+        submit.onclick = addNewMovie;
+    }
+    function fetchData() {
+        fetch('/api/movies')
+            .then(response => response.json())
+            .then(data => renderData(data));
+    }
+
+    function renderData(data) {
+        var json  = document.getElementById("json");
+        
+        var text = "";
+        data.map(m=> {
+            text+=(`<div>${m.name}</div>`);
+        })
+        json.innerHTML = text;
+       
+    }
+
+    function addNewMovie(e) {
+        e.preventDefault();
+        
+        var name = document.getElementById("movieName").value;
+        fetch('/api/movies',{
+            method: 'POST', // or 'PUT'
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({name}),
+        })
+        .then(response => response.json())
+        .then(data=> {
+            var json  = document.getElementById("json");
+            var div = document.createElement("div");
+            div.innerHTML = data.name
+            json.appendChild(div);
+        })
+    }
+
+</script>
+</body>
+</html>
